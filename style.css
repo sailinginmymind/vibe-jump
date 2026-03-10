@@ -11,6 +11,9 @@ body, html {
     overflow: hidden;
     color: white;
     font-family: 'Inter', sans-serif;
+    body {
+    transition: background-color 1.5s ease; /* Transizione di un secondo e mezzo */
+}
 }
 
 /* Canvas di gioco sotto tutto */
@@ -32,27 +35,45 @@ canvas {
 
 /* Punteggio in alto */
 #score {
-    position: absolute; top: 40px;
-    font-size: 3.5rem; font-weight: 900;
-    color: var(--neon);
-    text-shadow: 0 0 15px var(--neon);
+    position: absolute;
+    top: 40px;
+    font-size: 3.5rem;
+    font-weight: 900;
+    
+    /* MODIFICA DA QUI */
+    color: #ffffff; /* Testo bianco puro */
+    text-shadow: 0 0 15px #ffffff; /* Bagliore bianco puro */
+    /* A QUI */
+    
     pointer-events: none;
+    z-index: 20; /* Assicurati che stia sopra tutto durante il gioco */
 }
 
 /* --- MENU INIZIALE E GAME OVER --- */
 #start-screen {
-    background: rgba(0, 0, 0, 0.95);
+    /* Sfondo scuro ma semi-trasparente per vedere l'atmosfera del livello sotto */
+    background: rgba(10, 10, 10, 0.85); 
+    /* Effetto sfocatura sullo sfondo (molto cyberpunk) */
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+
     padding: 30px; 
     border-radius: 25px;
-    border: 2px solid var(--neon);
+    
+    /* Togliamo il colore fisso, lo gestiremo in JS */
+    border: 2px solid transparent; 
+    
     text-align: center;
     width: 85%;
     max-width: 350px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    pointer-events: auto; /* Riattiva i tocchi per i pulsanti del menu */
-    box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+    pointer-events: auto;
+    
+    /* Transizione morbida per i cambi di colore */
+    transition: border-color 0.5s ease, box-shadow 0.5s ease; 
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .game-title { 
@@ -121,4 +142,109 @@ canvas {
     .settings-box { margin-bottom: 15px; padding: 10px; }
     .main-play-btn { padding: 12px 20px; font-size: 1rem; }
     #score { top: 15px; font-size: 2.5rem; }
+}
+/* --- LEADERBOARD CENTRATA E MINIMAL --- */
+#leaderboard {
+    margin-top: 25px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra tutto il blocco */
+}
+
+#leaderboard h3 {
+    font-size: 0.65rem;
+    letter-spacing: 5px;
+    margin-bottom: 15px;
+    opacity: 0.6;
+    text-transform: uppercase;
+}
+
+#highscores-list {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    max-width: 220px; /* Limita la larghezza per tenerla compatta al centro */
+}
+
+#highscores-list li {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    padding: 6px 0;
+    display: flex;
+    justify-content: center; /* Centra il contenuto della riga */
+    align-items: baseline;
+    gap: 10px; /* Spazio tra nome e numero */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Rende il NUMERO molto più evidente */
+#highscores-list li span.score-val {
+    font-weight: 900;
+    font-size: 1rem; /* Numero leggermente più grande */
+    color: #ffffff;
+    min-width: 40px;
+    text-align: right;
+}
+
+#highscores-list li span.name-val {
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    text-align: left;
+}
+/* --- LEADERBOARD STYLE MODERNO --- */
+#leaderboard {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 320px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Font moderno, pulito e senza grazie */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#leaderboard h3 {
+    font-size: 0.9rem; /* Leggermente più piccolo per eleganza */
+    font-weight: 900;  /* Super grassetto */
+    letter-spacing: 5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 12px;
+    color: #ffffff;
+    transition: color 0.5s ease;
+}
+
+#highscores-list {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+#highscores-list li {
+    font-size: 0.9rem;
+    padding: 12px 0; /* Più spazio tra le righe per leggibilità */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Nome: Sottile e pulito */
+#highscores-list li span.name-val {
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+/* Numero: Molto evidente e moderno */
+#highscores-list li span.score-val {
+    font-weight: 900;
+    font-size: 1.3rem; /* Bello grande */
+    color: #ffffff;
+    font-variant-numeric: tabular-nums; /* Allinea perfettamente i numeri */
 }
