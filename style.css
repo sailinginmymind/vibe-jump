@@ -3,6 +3,7 @@
     --bg: #0a0a0a;
 }
 
+/* --- RESET E BASE --- */
 body, html {
     margin: 0; padding: 0;
     width: 100%; height: 100%;
@@ -12,59 +13,112 @@ body, html {
     font-family: 'Inter', sans-serif;
 }
 
+/* Canvas di gioco sotto tutto */
+canvas { 
+    display: block;
+    cursor: none; /* Effetto arcade: nasconde il mouse sul gioco */
+}
+
+/* --- LIVELLO INTERFACCIA (UI) --- */
 #ui-layer {
     position: absolute;
+    top: 0; left: 0;
     width: 100%; height: 100%;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     z-index: 10;
+    pointer-events: none; /* Permette di toccare il gioco attraverso il layer */
 }
 
+/* Punteggio in alto */
 #score {
     position: absolute; top: 40px;
     font-size: 3.5rem; font-weight: 900;
     color: var(--neon);
     text-shadow: 0 0 15px var(--neon);
+    pointer-events: none;
 }
 
+/* --- MENU INIZIALE E GAME OVER --- */
 #start-screen {
     background: rgba(0, 0, 0, 0.95);
-    padding: 40px; border-radius: 30px;
+    padding: 30px; 
+    border-radius: 25px;
     border: 2px solid var(--neon);
     text-align: center;
-    pointer-events: auto;
+    width: 85%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: auto; /* Riattiva i tocchi per i pulsanti del menu */
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
 }
 
 .game-title { 
-    font-size: 2.5rem; letter-spacing: 5px; margin-bottom: 20px; 
-    color: white; text-shadow: 0 0 10px var(--neon);
+    font-size: 2.5rem; 
+    letter-spacing: 5px; 
+    margin: 0 0 20px 0; 
+    color: white; 
+    text-shadow: 0 0 10px var(--neon);
+    font-weight: 900;
 }
 
+/* --- IMPOSTAZIONI E PULSANTI --- */
 .settings-box {
-    margin-bottom: 30px;
-    background: rgba(255,255,255,0.05);
-    padding: 15px; border-radius: 15px;
+    width: 100%;
+    margin-bottom: 25px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px; 
+    border-radius: 15px;
+    box-sizing: border-box;
 }
 
-.settings-box p { font-size: 0.8rem; margin-bottom: 10px; color: #888; }
+.settings-box p { font-size: 0.75rem; margin-bottom: 12px; color: #888; text-transform: uppercase; }
+
+.toggle-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
 
 .toggle-btn {
     background: #222; border: 1px solid #444; color: white;
-    padding: 10px 15px; margin: 5px; border-radius: 8px; cursor: pointer;
+    padding: 10px 15px; border-radius: 8px; cursor: pointer;
+    font-weight: bold; flex: 1;
+    transition: 0.2s;
 }
 
 .toggle-btn.active {
     background: var(--neon); color: black; border-color: var(--neon);
-    font-weight: bold;
+    box-shadow: 0 0 10px var(--neon);
 }
 
+.pc-hint {
+    font-size: 0.65rem; color: #555; margin-top: 12px;
+    text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* Pulsante principale */
 .main-play-btn {
     background: white; color: black; border: none;
-    padding: 15px 40px; font-size: 1.2rem; font-weight: 900;
+    padding: 18px 40px; font-size: 1.2rem; font-weight: 900;
     border-radius: 50px; cursor: pointer; width: 100%;
+    transition: transform 0.2s;
 }
 
+.main-play-btn:active { transform: scale(0.95); }
+
 .instruction {
-    margin-top: 15px; font-size: 0.9rem; color: #ffffff; /* Testo bianco leggibile */
-    opacity: 0.8;
+    margin-top: 15px; font-size: 0.85rem; color: #ffffff;
+    opacity: 0.7;
+}
+
+/* --- OTTIMIZZAZIONE PER SCHERMI PICCOLI (Mobile Landscape o mini-tel) --- */
+@media (max-height: 600px) {
+    #start-screen { padding: 15px; }
+    .game-title { font-size: 1.8rem; margin-bottom: 10px; }
+    .settings-box { margin-bottom: 15px; padding: 10px; }
+    .main-play-btn { padding: 12px 20px; font-size: 1rem; }
+    #score { top: 15px; font-size: 2.5rem; }
 }

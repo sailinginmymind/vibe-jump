@@ -5,26 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vibe Jump - Neon High</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
 </head>
 <body>
+
     <div id="ui-layer">
+        
         <div id="score">0</div>
         
-        <div id="start-screen">
-            <h1 class="game-title">VIBE JUMP</h1>
-            
-            <div class="settings-box">
-                <p>CONTROLLI:</p>
-                <button class="toggle-btn active" id="btnTouch" onclick="setControl('touch')">DITO</button>
-                <button class="toggle-btn" id="btnTilt" onclick="setControl('tilt')">INCLINA</button>
-            </div>
-
-            <button class="main-play-btn" onclick="startGame()">GIOCA ORA</button>
-            <p class="instruction">Tocca "GIOCA ORA" per saltare</p>
+       <div id="start-screen">
+    <h1 class="game-title" id="main-title">VIBE JUMP</h1>
+    
+    <p id="final-message" style="display: none; color: #fff; margin-bottom: 20px; font-weight: bold; font-size: 1.1rem;"></p>
+    
+    <div class="settings-box">
+        <p>CONTROLLI MOBILE:</p>
+        <div class="toggle-group">
+            <button class="toggle-btn active" id="btnTouch" onclick="setControl('touch')">DITO</button>
+            <button class="toggle-btn" id="btnTilt" onclick="setControl('tilt')">INCLINA</button>
         </div>
+        <p class="pc-hint">Su PC usa le FRECCE ← →</p>
+    </div>
+
+    <button class="main-play-btn" onclick="startGame()">GIOCA ORA</button>
+    <p class="instruction">Salta il più in alto possibile!</p>
+</div>
+
     </div>
 
     <canvas id="gameCanvas"></canvas>
+
     <script src="game.js"></script>
 </body>
 </html>

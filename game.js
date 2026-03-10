@@ -6,7 +6,8 @@ canvas.height = window.innerHeight;
 
 let score = 0;
 let gameActive = false;
-let controlMode = 'touch'; // 'touch' o 'tilt'
+let controlMode = 'touch'; 
+let keys = {}; 
 
 let ball = {
     x: canvas.width / 2,
@@ -19,28 +20,60 @@ let ball = {
 
 let platforms = [];
 
-// Funzione per scegliere il tipo di controllo
+// --- GESTIONE CONTROLLI ---
 function setControl(mode) {
     controlMode = mode;
     document.getElementById('btnTouch').classList.toggle('active', mode === 'touch');
     document.getElementById('btnTilt').classList.toggle('active', mode === 'tilt');
     
     if(mode === 'tilt' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission(); // Richiesto su iOS
+        DeviceOrientationEvent.requestPermission();
     }
 }
 
+// Supporto PC (Frecce)
+window.addEventListener('keydown', (e) => { keys[e.code] = true; });
+window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+// Supporto Mobile (Touch)
+window.addEventListener('touchstart', (e) => {
+    if(controlMode === 'touch') ball.x = e.touches[0].clientX;
+});
+window.addEventListener('touchmove', (e) => {
+    if(controlMode === 'touch') ball.x = e.touches[0].clientX;
+});
+
+// Supporto Mobile (Inclinazione)
+window.addEventListener('deviceorientation', (e) => {
+    if(controlMode === 'tilt' && gameActive) {
+        let tilt = e.gamma; 
+        ball.x += tilt * 0.8; // Sensibilità aumentata per reattività
+    }
+});
+
+let lastPlatformIndex = 0; // Tiene traccia dell'ultima piattaforma creata
+
 function createPlatforms() {
     platforms = [];
-    // Una piattaforma fissa sotto la pallina all'inizio
-    platforms.push({ x: canvas.width/2 - 50, y: canvas.height - 50, w: 100, h: 15 });
+    lastPlatformIndex = 0;
+    
+    // Piattaforma di partenza (Punto 0)
+    platforms.push({ 
+        x: canvas.width/2 - 50, 
+        y: canvas.height - 50, 
+        w: 100, 
+        h: 15, 
+        index: 0 
+    });
     
     for(let i=1; i<7; i++) {
+        lastPlatformIndex++;
         platforms.push({
             x: Math.random() * (canvas.width - 100),
             y: canvas.height - (i * 150),
             w: 100,
-            h: 15
+            h: 15,
+            index: lastPlatformIndex
         });
     }
 }
@@ -50,46 +83,33 @@ function startGame() {
     document.getElementById('score').innerText = score;
     document.getElementById('start-screen').style.display = 'none';
     
+    // Reset dei testi del menu
+    document.getElementById('main-title').innerText = "VIBE JUMP";
+    document.getElementById('final-message').style.display = 'none';
+    
+    ball.x = canvas.width / 2;
     ball.y = canvas.height - 100;
-    ball.dy = ball.jumpForce; // Salto automatico iniziale
+    ball.dy = ball.jumpForce; 
     createPlatforms();
     gameActive = true;
 }
-
-// GESTIONE MOVIMENTO
-window.addEventListener('touchstart', (e) => {
-    if(controlMode === 'touch') {
-        ball.x = e.touches[0].clientX;
-    }
-});
-
-window.addEventListener('touchmove', (e) => {
-    if(controlMode === 'touch') {
-        ball.x = e.touches[0].clientX;
-    }
-});
-
-// Accelerometro (Inclinazione)
-window.addEventListener('deviceorientation', (e) => {
-    if(controlMode === 'tilt' && gameActive) {
-        // gamma è l'inclinazione sinistra/destra (-90 a 90)
-        let tilt = e.gamma; 
-        ball.x += tilt * 0.5; // Regola sensibilità
-    }
-});
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     if(gameActive) {
+        // Movimento PC
+        if (keys['ArrowLeft']) ball.x -= 8;
+        if (keys['ArrowRight']) ball.x += 8;
+
         ball.y += ball.dy;
         ball.dy += ball.gravity;
 
-        // Limiti bordi laterali
+        // Effetto "Wrap" (Teletrasporto ai bordi)
         if(ball.x < 0) ball.x = canvas.width;
         if(ball.x > canvas.width) ball.x = 0;
 
-        // Scorrimento telecamera
+       // 1. Scorrimento telecamera (NON aumenta più lo score qui)
         if(ball.y < canvas.height / 2) {
             let diff = canvas.height / 2 - ball.y;
             ball.y = canvas.height / 2;
@@ -98,29 +118,50 @@ function draw() {
                 if(p.y > canvas.height) {
                     p.y = 0;
                     p.x = Math.random() * (canvas.width - 100);
-                    score++;
-                    document.getElementById('score').innerText = score;
+                    // Assegniamo alla nuova piattaforma l'indice successivo
+                    lastPlatformIndex++;
+                    p.index = lastPlatformIndex;
                 }
             });
         }
 
-        // Collisioni
+        // 2. Collisioni con piattaforme e AGGIORNAMENTO SCORE
         platforms.forEach(p => {
             if(ball.dy > 0 && 
-               ball.x + ball.radius > p.x && ball.x - ball.radius < p.x + p.w &&
+               ball.x + 10 > p.x && ball.x - 10 < p.x + p.w &&
                ball.y + ball.radius > p.y && ball.y + ball.radius < p.y + p.h) {
+                
                 ball.dy = ball.jumpForce;
+
+                // IL PUNTEGGIO DIVENTA L'INDICE DELLA PIATTAFORMA
+                // Solo se la piattaforma è più in alto di quella attuale
+                if (p.index > score) {
+                    score = p.index;
+                    document.getElementById('score').innerText = score;
+                }
             }
         });
 
-        // Game Over
+       // Game Over
         if(ball.y > canvas.height) {
             gameActive = false;
-            document.getElementById('start-screen').style.display = 'flex';
+            
+            // Personalizza il messaggio finale
+            const msgElement = document.getElementById('final-message');
+            const titleElement = document.getElementById('main-title');
+            
+            titleElement.innerText = "GAME OVER";
+            msgElement.innerText = `Peccato! Hai fatto ${score} punti.`;
+            msgElement.style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('start-screen').style.display = 'flex';
+            }, 300);
         }
     }
 
-    // Disegno Grafico
+    // --- DISEGNO GRAFICO ---
+    // Piattaforme Neon
     platforms.forEach(p => {
         ctx.fillStyle = "white";
         ctx.shadowBlur = 10;
@@ -128,6 +169,7 @@ function draw() {
         ctx.fillRect(p.x, p.y, p.w, p.h);
     });
 
+    // Pallina Neon
     ctx.beginPath();
     ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
     ctx.fillStyle = "#00ffcc";
@@ -139,5 +181,6 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
+// Avvio
 createPlatforms();
 draw();
