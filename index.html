@@ -9,14 +9,22 @@
 <body>
     <div id="ui-layer">
         <div id="score">0</div>
+        
         <div id="start-screen">
-            <h1>VIBE JUMP</h1>
-            <p>Tocca per saltare</p>
-            <button onclick="startGame()">GIOCA</button>
+            <h1 class="game-title">VIBE JUMP</h1>
+            
+            <div class="settings-box">
+                <p>CONTROLLI:</p>
+                <button class="toggle-btn active" id="btnTouch" onclick="setControl('touch')">DITO</button>
+                <button class="toggle-btn" id="btnTilt" onclick="setControl('tilt')">INCLINA</button>
+            </div>
+
+            <button class="main-play-btn" onclick="startGame()">GIOCA ORA</button>
+            <p class="instruction">Tocca "GIOCA ORA" per saltare</p>
         </div>
     </div>
+
     <canvas id="gameCanvas"></canvas>
-    
     <script src="game.js"></script>
 </body>
 </html>
