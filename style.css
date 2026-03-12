@@ -1,25 +1,25 @@
 :root {
     --neon: #00ffcc;
     --bg: #0a0a0a;
+    --blur: 10px;
 }
 
 /* --- RESET E BASE --- */
 body, html {
-    margin: 0; padding: 0;
-    width: 100%; height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
     background: var(--bg);
     overflow: hidden;
     color: white;
     font-family: 'Inter', sans-serif;
-    body {
-    transition: background-color 1.5s ease; /* Transizione di un secondo e mezzo */
-}
+    transition: background-color 1.5s ease;
 }
 
-/* Canvas di gioco sotto tutto */
 canvas { 
     display: block;
-    cursor: none; /* Effetto arcade: nasconde il mouse sul gioco */
+    cursor: none; 
 }
 
 /* --- LIVELLO INTERFACCIA (UI) --- */
@@ -27,62 +27,64 @@ canvas {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    z-index: 10;
-    pointer-events: none; /* Permette di toccare il gioco attraverso il layer */
-}
-
-/* Punteggio in alto */
-#score {
-    position: absolute;
-    top: 40px;
-    font-size: 3.5rem;
-    font-weight: 900;
-    
-    /* MODIFICA DA QUI */
-    color: #ffffff; /* Testo bianco puro */
-    text-shadow: 0 0 15px #ffffff; /* Bagliore bianco puro */
-    /* A QUI */
-    
-    pointer-events: none;
-    z-index: 20; /* Assicurati che stia sopra tutto durante il gioco */
-}
-
-/* --- MENU INIZIALE E GAME OVER --- */
-#start-screen {
-    /* Sfondo scuro ma semi-trasparente per vedere l'atmosfera del livello sotto */
-    background: rgba(10, 10, 10, 0.85); 
-    /* Effetto sfocatura sullo sfondo (molto cyberpunk) */
-    backdrop-filter: blur(10px); 
-    -webkit-backdrop-filter: blur(10px);
-
-    padding: 30px; 
-    border-radius: 25px;
-    
-    /* Togliamo il colore fisso, lo gestiremo in JS */
-    border: 2px solid transparent; 
-    
-    text-align: center;
-    width: 85%;
-    max-width: 350px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#score {
+    position: absolute; 
+    left: 50%;
+    top: 40px;
+    transform: translateX(-50%);
+    font-family: 'Arial Black', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #ffffff; 
+    text-shadow: 0 0 15px #ffffff, 0 0 30px rgba(255,255,255,0.5); 
+    display: none;
+    pointer-events: none;
+    z-index: 20;
+}
+
+/* --- MENU E GAME OVER --- */
+#start-screen {
+    width: 85%;
+    max-width: 350px;
+    padding: 30px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    gap: 10px;
+    background: rgba(10, 10, 10, 0.85); 
+    backdrop-filter: blur(var(--blur)); 
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 2px solid transparent; 
+    border-radius: 25px;
+    text-align: center;
     pointer-events: auto;
-    
-    /* Transizione morbida per i cambi di colore */
-    transition: border-color 0.5s ease, box-shadow 0.5s ease; 
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.5s ease, box-shadow 0.5s ease; 
 }
 
 .game-title { 
-    font-size: 2.5rem; 
+    font-size: clamp(1.5rem, 8vw, 2.5rem); 
+    font-weight: 900;
     letter-spacing: 5px; 
-    margin: 0 0 20px 0; 
+    margin-bottom: 15px; 
     color: white; 
     text-shadow: 0 0 10px var(--neon);
-    font-weight: 900;
+    white-space: nowrap; 
+}
+
+h1 {
+    font-size: clamp(2rem, 10vw, 4rem);
+    margin-bottom: 20px;
+    white-space: nowrap;
 }
 
 /* --- IMPOSTAZIONI E PULSANTI --- */
@@ -95,7 +97,12 @@ canvas {
     box-sizing: border-box;
 }
 
-.settings-box p { font-size: 0.75rem; margin-bottom: 12px; color: #888; text-transform: uppercase; }
+.settings-box p { 
+    font-size: 0.75rem; 
+    margin-bottom: 12px; 
+    color: #888; 
+    text-transform: uppercase; 
+}
 
 .toggle-group {
     display: flex;
@@ -104,147 +111,257 @@ canvas {
 }
 
 .toggle-btn {
-    background: #222; border: 1px solid #444; color: white;
-    padding: 10px 15px; border-radius: 8px; cursor: pointer;
-    font-weight: bold; flex: 1;
+    flex: 1;
+    background: #222;
+    border: 1px solid #444;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
     transition: 0.2s;
 }
 
 .toggle-btn.active {
-    background: var(--neon); color: black; border-color: var(--neon);
+    background: var(--neon);
+    color: black;
+    border-color: var(--neon);
     box-shadow: 0 0 10px var(--neon);
 }
 
 .pc-hint {
-    font-size: 0.65rem; color: #555; margin-top: 12px;
-    text-transform: uppercase; letter-spacing: 1px;
+    font-size: 0.65rem;
+    color: #555;
+    margin-top: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-/* Pulsante principale */
 .main-play-btn {
-    background: white; color: black; border: none;
-    padding: 18px 40px; font-size: 1.2rem; font-weight: 900;
-    border-radius: 50px; cursor: pointer; width: 100%;
+    width: 100%;
+    background: white;
+    color: black;
+    border: none;
+    padding: 18px 40px;
+    font-size: 1.2rem;
+    font-weight: 900;
+    border-radius: 50px;
+    cursor: pointer;
     transition: transform 0.2s;
 }
 
 .main-play-btn:active { transform: scale(0.95); }
 
 .instruction {
-    margin-top: 15px; font-size: 0.85rem; color: #ffffff;
+    margin-top: 15px;
+    font-size: 0.85rem;
+    color: #ffffff;
     opacity: 0.7;
 }
 
-/* --- OTTIMIZZAZIONE PER SCHERMI PICCOLI (Mobile Landscape o mini-tel) --- */
-@media (max-height: 600px) {
-    #start-screen { padding: 15px; }
-    .game-title { font-size: 1.8rem; margin-bottom: 10px; }
-    .settings-box { margin-bottom: 15px; padding: 10px; }
-    .main-play-btn { padding: 12px 20px; font-size: 1rem; }
-    #score { top: 15px; font-size: 2.5rem; }
-}
-/* --- LEADERBOARD CENTRATA E MINIMAL --- */
+/* --- CLASSIFICA --- */
 #leaderboard {
-    margin-top: 25px;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centra tutto il blocco */
-}
-
-#leaderboard h3 {
-    font-size: 0.65rem;
-    letter-spacing: 5px;
-    margin-bottom: 15px;
-    opacity: 0.6;
-    text-transform: uppercase;
-}
-
-#highscores-list {
-    list-style: none;
-    padding: 0;
-    width: 100%;
-    max-width: 220px; /* Limita la larghezza per tenerla compatta al centro */
-}
-
-#highscores-list li {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.8rem;
-    padding: 6px 0;
-    display: flex;
-    justify-content: center; /* Centra il contenuto della riga */
-    align-items: baseline;
-    gap: 10px; /* Spazio tra nome e numero */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Rende il NUMERO molto più evidente */
-#highscores-list li span.score-val {
-    font-weight: 900;
-    font-size: 1rem; /* Numero leggermente più grande */
-    color: #ffffff;
-    min-width: 40px;
-    text-align: right;
-}
-
-#highscores-list li span.name-val {
-    color: rgba(255, 255, 255, 0.7);
-    text-transform: uppercase;
-    text-align: left;
-}
-/* --- LEADERBOARD STYLE MODERNO --- */
-#leaderboard {
-    margin-top: 30px;
-    width: 100%;
-    max-width: 320px; 
+    max-width: 300px; 
+    margin-top: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Font moderno, pulito e senza grazie */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 #leaderboard h3 {
-    font-size: 0.9rem; /* Leggermente più piccolo per eleganza */
-    font-weight: 900;  /* Super grassetto */
-    letter-spacing: 5px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
     width: 100%;
+    font-size: 0.7rem; 
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 12px;
-    color: #ffffff;
-    transition: color 0.5s ease;
+    padding-bottom: 5px;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 #highscores-list {
     list-style: none;
     padding: 0;
+    margin: 0;
     width: 100%;
+    max-height: 120px; 
+    overflow-y: auto;
 }
 
 #highscores-list li {
-    font-size: 0.9rem;
-    padding: 12px 0; /* Più spazio tra le righe per leggibilità */
+    font-size: 0.85rem;
+    padding: 8px 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Nome: Sottile e pulito */
-#highscores-list li span.name-val {
-    color: rgba(255, 255, 255, 0.7);
-    text-transform: uppercase;
-    font-weight: 500;
-    letter-spacing: 1px;
+.name-val {
+    color: rgba(255, 255, 255, 0.8);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 120px;
 }
 
-/* Numero: Molto evidente e moderno */
-#highscores-list li span.score-val {
+.score-val {
     font-weight: 900;
-    font-size: 1.3rem; /* Bello grande */
-    color: #ffffff;
-    font-variant-numeric: tabular-nums; /* Allinea perfettamente i numeri */
+    font-size: 1.1rem;
+    color: var(--neon);
+}
+
+/* --- SETTINGS OVERLAY --- */
+#settings-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 1000;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+}
+
+#settings-btn:hover { opacity: 1; }
+
+.overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+.overlay.active { opacity: 1; visibility: visible; }
+
+.settings-content {
+    width: 90%;
+    max-width: 400px;
+    padding: 25px;
+    background: #111;
+    border: 2px solid var(--neon);
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+    transform: translateX(100px) scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.overlay.active .settings-content { transform: translateX(0) scale(1); }
+
+/* --- INPUT E SLIDER --- */
+.name-section { margin-bottom: 30px; }
+
+#edit-player-name {
+    width: 90%;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(0, 255, 204, 0.3);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.1);
+}
+
+#edit-player-name:focus {
+    border-color: var(--neon);
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.4), inset 0 0 5px rgba(0, 255, 204, 0.2);
+    background: rgba(0, 255, 204, 0.05);
+}
+
+.setting-item label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--neon);
+    text-transform: uppercase;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    border: 1px solid rgba(0, 255, 204, 0.2);
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px; width: 20px;
+    border-radius: 50%;
+    background: var(--neon);
+    margin-top: -8px;
+    box-shadow: 0 0 10px var(--neon), 0 0 20px rgba(0, 255, 204, 0.5);
+    transition: transform 0.2s ease;
+}
+
+input[type=range]:active::-webkit-slider-thumb {
+    transform: scale(1.2);
+    background: #ffffff;
+}
+
+/* --- PULSANTI AZIONE --- */
+.save-name-btn, .menu-btn {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    border-radius: 30px !important;
+    transition: all 0.3s ease;
+}
+
+.save-name-btn {
+    margin-top: 25px;
+    background: var(--neon);
+    color: #000;
+    border: none;
+    padding: 8px 20px;
+    display: inline-block;
+    box-shadow: 0 0 10px var(--neon);
+}
+
+.menu-btn {
+    background: transparent;
+    color: var(--neon);
+    border: 1px solid var(--neon);
+    padding: 10px 25px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.save-name-btn:hover, .menu-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
+    filter: brightness(1.2);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-height: 600px) {
+    #start-screen { padding: 15px; }
+    .game-title { font-size: 1.8rem; margin-bottom: 10px; }
+    .settings-box { margin-bottom: 15px; padding: 10px; }
+    .main-play-btn { padding: 12px 20px; font-size: 1rem; }
+    #score { top: 15px; font-size: 2.5rem; }
 }

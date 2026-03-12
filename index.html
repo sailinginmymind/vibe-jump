@@ -10,38 +10,115 @@
 <body>
 
     <div id="ui-layer">
-        
-        <div id="score">0</div>
-        
-   <div id="start-screen">
-    <h1 class="game-title" id="main-title">VIBE JUMP</h1>
-    
-    <p id="final-message" style="display: none; color: #fff; margin-bottom: 20px; font-weight: bold; font-size: 1.1rem;"></p>
-    
-    <div class="settings-box">
-        <p>CONTROLLI MOBILE:</p>
-        <div class="toggle-group">
-            <button class="toggle-btn active" id="btnTouch" onclick="setControl('touch')">DITO</button>
-            <button class="toggle-btn" id="btnTilt" onclick="setControl('tilt')">INCLINA</button>
+<div id="score-container" style="position: fixed; top: 20px; width: 100%; text-align: center; pointer-events: none;">
+    <div id="score" style="font-size: 3rem; font-weight: 900; color: white; text-shadow: 0 0 20px rgba(255,255,255,0.5);">0</div>
+    <div id="multiplier-tag" style="display: none; color: #ffff00; font-weight: 900; font-size: 1.8rem; text-shadow: 0 0 15px #ffff00; margin-top: -5px; transition: transform 0.1s ease;">x2</div>
+</div>       
+        <div id="start-screen">
+            <h1 class="game-title" id="main-title">VIBE JUMP</h1>
+            <div id="player-display" style="color: #00ffcc; font-size: 0.8rem; letter-spacing: 2px; margin-top: -10px; margin-bottom: 15px; text-transform: uppercase; opacity: 0.8; font-weight: 900;"></div>    
+            <p id="final-message" style="display: none; color: #fff; margin-bottom: 20px; font-weight: bold; font-size: 1.1rem;"></p>
+            
+            <div class="settings-box">
+                <p>CONTROLLI MOBILE:</p>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="btnTouch" onclick="setControl('touch')">DITO</button>
+                    <button class="toggle-btn" id="btnTilt" onclick="setControl('tilt')">INCLINA</button>
+                </div>
+                <p class="pc-hint">Su PC usa le FRECCE ← →</p>
+            </div>
+
+            <button class="main-play-btn" onclick="startGame()">GIOCA ORA</button>
+
+            <div id="leaderboard">
+                <h3 style="color: #00ffcc; font-size: 0.8rem; margin-top: 20px; letter-spacing: 2px;">TOP 5 JUMPERS</h3>
+                <ul id="highscores-list" style="list-style: none; padding: 0; color: white; font-family: monospace;">
+                    <li>CARICAMENTO...</li>
+                </ul>
+            </div>
+            
+            <p class="instruction" style="margin-top: 15px;">Salta il più in alto possibile!</p>
         </div>
-        <p class="pc-hint">Su PC usa le FRECCE ← →</p>
     </div>
 
-    <button class="main-play-btn" onclick="startGame()">GIOCA ORA</button>
-
-    <div id="leaderboard">
-        <h3 style="color: #00ffcc; font-size: 0.8rem; margin-top: 20px; letter-spacing: 2px;">TOP 5 JUMPERS</h3>
-        <ul id="highscores-list" style="list-style: none; padding: 0; color: white; font-family: monospace;">
-            <li>CARICAMENTO...</li>
-        </ul>
-    </div>
-    
-    <p class="instruction" style="margin-top: 15px;">Salta il più in alto possibile!</p>
-</div>
-
-    </div>
-
+    <div id="neon-timer" class="neon-timer-border"></div>
     <canvas id="gameCanvas"></canvas>
+
+    <button id="settings-btn" onclick="toggleSettings()" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.6);
+        border: 2px solid #00ffcc;
+        color: #00ffcc;
+        font-size: 28px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 15px rgba(0, 255, 204, 0.4), inset 0 0 10px rgba(0, 255, 204, 0.2);
+        transition: all 0.3s ease;
+        z-index: 1000;
+    ">
+        ⚙️
+    </button>
+
+    <div id="settings-panel" class="overlay">
+        <div class="settings-content">
+            <h2 style="color: #00ffcc; text-shadow: 0 0 10px #00ffcc; margin-top: 0;">IMPOSTAZIONI</h2>
+            
+            <div class="name-section">
+                <label style="font-size: 11px; color: #888; letter-spacing: 1px;">IL TUO NOME</label><br>
+                <input type="text" id="edit-player-name" placeholder="Inserisci nome...">
+                <br>
+                <button class="save-name-btn" onclick="updateName()">SALVA NOME</button>
+            </div>
+
+            <div class="setting-item">
+                <label>SENSIBILITÀ TILT: <span id="tilt-val" style="color:#00ffcc">0.4</span></label>
+                <input type="range" id="tilt-sens" min="0.1" max="1.5" step="0.1" value="0.4">
+            </div>
+
+            <div class="setting-item">
+                <label>SENSIBILITÀ TOUCH: <span id="touch-val" style="color:#00ffcc">1.2</span></label>
+                <input type="range" id="touch-sens" min="0.5" max="3" step="0.1" value="1.2">
+            </div>
+
+            <div class="stats-container" style="margin-top: 25px; padding: 15px; border: 2px solid #ff00ff; border-radius: 15px; background: rgba(255, 0, 255, 0.05); box-shadow: 0 0 15px rgba(255, 0, 255, 0.2); text-align: center;">
+                <h3 style="color: #ff00ff; font-size: 0.8rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px #ff00ff;">Dati Carriera</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 0.6rem; color: #888;">PARTITE</div>
+                        <div id="stat-games" style="font-size: 1.4rem; color: #fff; font-weight: bold;">0</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 0.6rem; color: #888;">RECORD</div>
+                        <div id="stat-best" style="font-size: 1.4rem; color: #00ffcc; font-weight: bold;">0</div>
+                    </div>
+                    <div style="grid-column: span 2; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 0.6rem; color: #888;">PUNTI TOTALI ACCUMULATI</div>
+                        <div id="stat-total" style="font-size: 1.6rem; color: #ff00ff; font-weight: bold;">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <button class="menu-btn" onclick="toggleSettings()">CHIUDI</button>
+                <button class="menu-btn danger" onclick="changeName()" style="font-size: 10px; opacity: 0.6; border: none; background: none; color: #ff4444;">RESETTA PROFILO</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #settings-btn:hover {
+            transform: scale(1.1) rotate(45deg);
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.8);
+            background: rgba(0, 255, 204, 0.1);
+        }
+    </style>
 
     <script src="game.js"></script>
 </body>
