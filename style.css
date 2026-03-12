@@ -35,20 +35,46 @@ canvas {
     pointer-events: none;
 }
 
+/* --- UI DI GIOCO (Punteggio e Moltiplicatore) --- */
+
+/* 1. Il contenitore che allinea tutto al centro uno sotto l'altro */
+#score-container {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column; /* Mette gli elementi in colonna */
+    align-items: center;    /* Li centra orizzontalmente */
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* 2. Modifica il tuo vecchio #score così (rimosso absolute e messo margin) */
 #score {
-    position: absolute; 
-    left: 50%;
-    top: 40px;
-    transform: translateX(-50%);
     font-family: 'Arial Black', sans-serif;
     font-size: 3.5rem;
     font-weight: 900;
     color: #ffffff; 
     text-shadow: 0 0 15px #ffffff, 0 0 30px rgba(255,255,255,0.5); 
-    display: none;
-    pointer-events: none;
-    z-index: 20;
+    display: none; /* Sarà reso visibile da JS durante il gioco */
+    margin: 0;
+    line-height: 1; /* Avvicina il moltiplicatore al numero */
 }
+
+/* 3. Aggiungi lo stile per il moltiplicatore */
+#multiplier-tag {
+    display: none; /* Appare solo quando prendi il bonus */
+    color: #ffff00;
+    font-weight: 900;
+    font-size: 1.8rem;
+    text-shadow: 0 0 15px #ffff00;
+    margin-top: 5px; /* Distanza tra punteggio e moltiplicatore */
+    transition: transform 0.1s ease;
+}
+
+/* --- IL RESTO DEL TUO CODICE --- */
+/* Mantieni qui sotto il resto del CSS per #start-screen, .game-title, ecc. */
 
 /* --- MENU E GAME OVER --- */
 #start-screen {
