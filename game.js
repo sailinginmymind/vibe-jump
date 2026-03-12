@@ -46,10 +46,12 @@ window.onload = () => {
     const touchInput = document.getElementById('touch-sens');
     const tiltVal = document.getElementById('tilt-val'); 
     const touchVal = document.getElementById('touch-val'); 
+    const savedName = localStorage.getItem('vibeJump_playerName');
+    const playerDisplay = document.getElementById('player-display');
 
     const savedTilt = localStorage.getItem('vibeJump_tilt');
     const savedTouch = localStorage.getItem('vibeJump_touch');
-
+    
     if(savedTilt) {
         tiltSensitivity = parseFloat(savedTilt);
         if(tiltInput) tiltInput.value = tiltSensitivity;
@@ -76,6 +78,7 @@ window.onload = () => {
             localStorage.setItem('vibeJump_touch', touchSensitivity);
         });
     }
+    checkNameBanner();
     refreshPlayerDisplay();
     loadLeaderboardFromGoogle();
     updateStatsDisplay();
@@ -99,10 +102,21 @@ function changeName() {
 function updateName() {
     const nameInput = document.getElementById('edit-player-name');
     const newName = nameInput.value.trim(); 
+    
     if (newName) {
         localStorage.setItem('vibeJump_playerName', newName);
+        
+        // Feedback visivo sull'input
         nameInput.style.borderColor = "#00ff00"; 
         setTimeout(() => { nameInput.style.borderColor = "#00ffcc"; }, 1000);
+        
+        // Aggiorna subito il saluto e nascondi il banner
+        const playerDisplay = document.getElementById('player-display');
+        if (playerDisplay) playerDisplay.innerText = `Benvenuto, ${newName}!`;
+        
+        const banner = document.getElementById('name-reminder');
+        if (banner) banner.style.display = 'none';
+
         refreshPlayerDisplay(); 
         nameInput.blur(); 
     } else {
@@ -170,11 +184,23 @@ async function loadLeaderboardFromGoogle() {
 
 function getPlayerName() {
     let savedName = localStorage.getItem('vibeJump_playerName');
-    if (!savedName || savedName.trim() === "") {
-        savedName = prompt("BENVENUTO! Inserisci il tuo nome:", "Player1") || "Player1";
-        localStorage.setItem('vibeJump_playerName', savedName.substring(0, 15));
+    
+    if (savedName && savedName.trim() !== "") {
+        return savedName;
     }
-    return savedName;
+    
+    // Se arrivano qui senza nome, usiamo il prompt come ultima spiaggia
+    let newName = prompt("Inserisci il tuo nome per la classifica:", "Player1");
+    if (!newName || newName.trim() === "") newName = "Jumper_" + Math.floor(Math.random() * 1000);
+    
+    localStorage.setItem('vibeJump_playerName', newName.substring(0, 15));
+    
+    // Aggiorna l'interfaccia
+    const playerDisplay = document.getElementById('player-display');
+    if (playerDisplay) playerDisplay.innerText = `Benvenuto, ${newName}!`;
+    document.getElementById('name-reminder').style.display = 'none';
+    
+    return newName;
 }
 
 function setControl(mode) {
